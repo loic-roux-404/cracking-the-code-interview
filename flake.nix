@@ -38,15 +38,24 @@
       devShells = let 
         system = baseSystem;
         stablePkgs = import inputs.nixpkgs (nixpkgsDefaults // { inherit system; });
+        node18PnpmPackages = with stablePkgs; (nodePackages.pnpm.override { nodejs = nodejs_18; });
        in
         {
           default = stablePkgs.mkShell {
             name = "default";
+            buildInputs = stablePkgs.lib.attrValues {
+              inherit (stablePkgs) nodejs_18;
+            } ++ [ node18PnpmPackages ];
+            nativeBuildInputs = stablePkgs.lib.attrValues {
+              inherit (stablePkgs) nil
+              go go-outline gopls gopkgs go-tools delve;
+            };
             packages = stablePkgs.lib.attrValues {
-              inherit (stablePkgs) exercism;
+              inherit (stablePkgs) exercism
+              rustc cargo;
             };
             shellHook = ''
-              exercism configure -w $PWD
+              [ "$(exercism workspace)" = "$PWD" ] && echo -n || exercism configure -w "$PWD"
             '';
           };
         };
