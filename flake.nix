@@ -3,7 +3,7 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:NixOS/nixpkgs/24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/24.11-pre";
 
     # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
@@ -46,6 +46,7 @@
               inherit (stablePkgs) exercism;
             };
             shellHook = ''
+              exercism configure -w $PWD
             '';
           };
         };
